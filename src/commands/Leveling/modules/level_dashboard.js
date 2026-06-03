@@ -24,53 +24,53 @@ import { botHasPermission } from '../../../utils/permissionGuard.js';
 // ─── Embed & Menu Builders ────────────────────────────────────────────────────
 
 function buildDashboardEmbed(cfg, guild) {
-    const channel = cfg.levelUpChannel ? `<#${cfg.levelUpChannel}>` : '`Not set`';
+    const channel = cfg.levelUpChannel ? `<#${cfg.levelUpChannel}>` : '`לא הוגדר`';
     const xpMin = cfg.xpRange?.min ?? cfg.xpPerMessage?.min ?? 15;
     const xpMax = cfg.xpRange?.max ?? cfg.xpPerMessage?.max ?? 25;
     const cooldown = cfg.xpCooldown ?? 60;
-    const rawMsg = cfg.levelUpMessage || '{user} has leveled up to level {level}!';
+    const rawMsg = cfg.levelUpMessage || '{user} עלה לרמה {level}!';
     const msgPreview = `\`${rawMsg.length > 60 ? rawMsg.substring(0, 60) + '…' : rawMsg}\``;
 
     return new EmbedBuilder()
-        .setTitle('📊 Leveling System Dashboard')
-        .setDescription(`Manage leveling settings for **${guild.name}**.\nSelect an option below to modify a setting.`)
+        .setTitle('📊 לוח בקרה מערכת הדירוג')
+        .setDescription(`ניהול הגדרות הדירוג עבור **${guild.name}**.\nבחר אפשרות למטה כדי לשנות הגדרה.`)
         .setColor(getColor('info'))
         .addFields(
-            { name: '📢 Level-up Channel', value: channel, inline: true },
-            { name: '⚙️ System Status', value: cfg.enabled ? '✅ **Enabled**' : '❌ **Disabled**', inline: true },
-            { name: '📣 Announcements', value: cfg.announceLevelUp !== false ? '✅ **Enabled**' : '❌ **Disabled**', inline: true },
-            { name: '🎲 XP per Message', value: `\`${xpMin} – ${xpMax}\``, inline: true },
-            { name: '⏱️ XP Cooldown', value: `\`${cooldown}s\``, inline: true },
+            { name: '📢 ערוץ עלייה ברמה', value: channel, inline: true },
+            { name: '⚙️ סטטוס מערכת', value: cfg.enabled ? '✅ **מופעל**' : '❌ **מכובה**', inline: true },
+            { name: '📣 הודעות', value: cfg.announceLevelUp !== false ? '✅ **מופעל**' : '❌ **מכובה**', inline: true },
+            { name: '🎲 XP לכל הודעה', value: `\`${xpMin} – ${xpMax}\``, inline: true },
+            { name: '⏱️ זמן המתנה XP', value: `\`${cooldown}s\``, inline: true },
             { name: '\u200B', value: '\u200B', inline: true },
-            { name: '💬 Level-up Message', value: msgPreview, inline: false },
+            { name: '💬 הודעת עלייה ברמה', value: msgPreview, inline: false },
         )
-        .setFooter({ text: 'Dashboard closes after 10 minutes of inactivity' })
+        .setFooter({ text: 'לוח הבקרה ייסגר לאחר 10 דקות של חוסר פעילות' })
         .setTimestamp();
 }
 
 function buildSelectMenu(guildId) {
     return new StringSelectMenuBuilder()
         .setCustomId(`level_cfg_${guildId}`)
-        .setPlaceholder('Select a setting to configure...')
+        .setPlaceholder('בחר הגדרה להגדרה...')
         .addOptions(
             new StringSelectMenuOptionBuilder()
-                .setLabel('Change Level-up Channel')
-                .setDescription('Set the channel where level-up notifications are sent')
+                .setLabel('שנה ערוץ עלייה ברמה')
+                .setDescription('הגדר את הערוץ שבו יישלחו הודעות עלייה ברמה')
                 .setValue('channel')
                 .setEmoji('📢'),
             new StringSelectMenuOptionBuilder()
-                .setLabel('Edit Level-up Message')
-                .setDescription('Customise the message shown when a user levels up')
+                .setLabel('ערוך הודעת עלייה ברמה')
+                .setDescription('התאם אישית את ההודעה המוצגת כאשר משתמש עולה ברמה')
                 .setValue('message')
                 .setEmoji('💬'),
             new StringSelectMenuOptionBuilder()
-                .setLabel('Set XP Range')
-                .setDescription('Set the minimum and maximum XP rewarded per message')
+                .setLabel('הגדר טווח XP')
+                .setDescription('הגדר את XP מינימלי ומקסימלי שמוענקים לכל הודעה')
                 .setValue('xp_range')
                 .setEmoji('🎲'),
             new StringSelectMenuOptionBuilder()
-                .setLabel('Set XP Cooldown')
-                .setDescription('Seconds between XP grants for the same user')
+                .setLabel('הגדר זמן המתנה XP')
+                .setDescription('שניות בין הענקת XP לאותו משתמש')
                 .setValue('xp_cooldown')
                 .setEmoji('⏱️'),
         );
@@ -82,13 +82,13 @@ function buildButtonRow(cfg, guildId, disabled = false) {
     return new ActionRowBuilder().addComponents(
         new ButtonBuilder()
             .setCustomId(`level_cfg_toggle_announce_${guildId}`)
-            .setLabel('Announcements')
+            .setLabel('הודעות')
             .setStyle(announceOn ? ButtonStyle.Success : ButtonStyle.Danger)
             .setEmoji('📣')
             .setDisabled(disabled),
         new ButtonBuilder()
             .setCustomId(`level_cfg_toggle_system_${guildId}`)
-            .setLabel('Leveling')
+            .setLabel('דירוג')
             .setStyle(systemOn ? ButtonStyle.Success : ButtonStyle.Danger)
             .setEmoji('⚡')
             .setDisabled(disabled),
@@ -120,7 +120,7 @@ export default {
                 throw new TitanBotError(
                     'Leveling system not configured',
                     ErrorTypes.CONFIGURATION,
-                    'The leveling system has not been set up yet. Run `/level setup` first to configure it.',
+                    'מערכת הדירוג עדיין לא הוגדרה. הרץ `/דירוג הגדרה` תחילה כדי להגדיר אותה.',
                 );
             }
 
@@ -165,8 +165,8 @@ export default {
 
                     const errorMessage =
                         error instanceof TitanBotError
-                            ? error.userMessage || 'An error occurred while processing your selection.'
-                            : 'An unexpected error occurred while updating the configuration.';
+                            ? error.userMessage || 'אירעה שגיאה בעת עיבוד הבחירה שלך.'
+                            : 'אירעה שגיאה בלתי צפויה בעת עדכון ההגדרה.';
 
                     if (!selectInteraction.replied && !selectInteraction.deferred) {
                         await selectInteraction.deferUpdate().catch(() => {});
@@ -174,7 +174,7 @@ export default {
 
                     await selectInteraction
                         .followUp({
-                            embeds: [errorEmbed('Configuration Error', errorMessage)],
+                            embeds: [errorEmbed('שגיאת הגדרה', errorMessage)],
                             flags: MessageFlags.Ephemeral,
                         })
                         .catch(() => {});
@@ -206,8 +206,8 @@ export default {
                     await btnInteraction.followUp({
                         embeds: [
                             successEmbed(
-                                '✅ Announcements Updated',
-                                `Level-up announcements are now **${cfg.announceLevelUp ? 'enabled' : 'disabled'}**.`,
+                                '✅ הודעות עודכנו',
+                                `הודעות עלייה ברמה כעת **${cfg.announceLevelUp ? 'מופעלות' : 'מכובות'}**.`,
                             ),
                         ],
                         flags: MessageFlags.Ephemeral,
@@ -219,8 +219,8 @@ export default {
                     await btnInteraction.followUp({
                         embeds: [
                             successEmbed(
-                                '✅ System Updated',
-                                `The leveling system is now **${cfg.enabled ? 'enabled' : 'disabled'}**.${!cfg.enabled ? '\nUsers will not earn XP until the system is re-enabled.' : ''}`,
+                                '✅ מערכת עודכנה',
+                                `מערכת הדירוג כעת **${cfg.enabled ? 'מופעלת' : 'מכובה'}**.${!cfg.enabled ? '\nמשתמשים לא יהרוויחו XP עד שהמערכת תופעל מחדש.' : ''}`,
                             ),
                         ],
                         flags: MessageFlags.Ephemeral,
@@ -234,8 +234,8 @@ export default {
                 if (reason === 'time') {
                     btnCollector.stop();
                     const timeoutEmbed = new EmbedBuilder()
-                        .setTitle('⏰ Dashboard Timed Out')
-                        .setDescription('This dashboard has been closed due to inactivity. Please run the command again to continue.')
+                        .setTitle('⏰ לוח הבקרה פג')
+                        .setDescription('לוח הבקרה זה נסגר בגלל חוסר פעילות. אנא הרץ את הפקודה שוב כדי להמשיך.')
                         .setColor(getColor('error'));
                     
                     await InteractionHelper.safeEditReply(interaction, {
@@ -248,8 +248,8 @@ export default {
             btnCollector.on('end', async (collected, reason) => {
                 if (reason === 'time') {
                     const timeoutEmbed = new EmbedBuilder()
-                        .setTitle('⏰ Dashboard Timed Out')
-                        .setDescription('This dashboard has been closed due to inactivity. Please run the command again to continue.')
+                        .setTitle('⏰ לוח הבקרה פג')
+                        .setDescription('לוח הבקרה זה נסגר בגלל חוסר פעילות. אנא הרץ את הפקודה שוב כדי להמשיך.')
                         .setColor(getColor('error'));
                     
                     await InteractionHelper.safeEditReply(interaction, {
@@ -264,7 +264,7 @@ export default {
             throw new TitanBotError(
                 `Level dashboard failed: ${error.message}`,
                 ErrorTypes.UNKNOWN,
-                'Failed to open the leveling dashboard.',
+                'נכשל לפתוח את לוח בקרה הדירוג.',
             );
         }
     },
@@ -277,7 +277,7 @@ async function handleChannel(selectInteraction, rootInteraction, cfg, guildId, c
 
     const channelSelect = new ChannelSelectMenuBuilder()
         .setCustomId('level_cfg_channel')
-        .setPlaceholder('Select a text channel...')
+        .setPlaceholder('בחר ערוץ טקסט...')
         .addChannelTypes(ChannelType.GuildText)
         .setMaxValues(1);
 
@@ -286,9 +286,9 @@ async function handleChannel(selectInteraction, rootInteraction, cfg, guildId, c
     await selectInteraction.followUp({
         embeds: [
             new EmbedBuilder()
-                .setTitle('📢 Change Level-up Channel')
+                .setTitle('📢 שנה ערוץ עלייה ברמה')
                 .setDescription(
-                    `**Current:** ${cfg.levelUpChannel ? `<#${cfg.levelUpChannel}>` : '`Not set`'}\n\nSelect the channel where level-up notifications will be sent.`,
+                    `**נוכחי:** ${cfg.levelUpChannel ? `<#${cfg.levelUpChannel}>` : '`לא הוגדר`'}\n\nבחר את הערוץ שבו יישלחו הודעות עלייה ברמה.`,
                 )
                 .setColor(getColor('info')),
         ],
@@ -312,8 +312,8 @@ async function handleChannel(selectInteraction, rootInteraction, cfg, guildId, c
             await chanInteraction.followUp({
                 embeds: [
                     errorEmbed(
-                        'Missing Permissions',
-                        `I need **SendMessages** and **EmbedLinks** permissions in ${channel} to send level-up notifications.`,
+                        'הרשאות חסרות',
+                        `אני צריך את ההרשאות **שליחת הודעות** ו**הטמעת קישורים** ב-${channel} כדי לשלוח הודעות עלייה ברמה.`,
                     ),
                 ],
                 flags: MessageFlags.Ephemeral,
@@ -327,8 +327,8 @@ async function handleChannel(selectInteraction, rootInteraction, cfg, guildId, c
         await chanInteraction.followUp({
             embeds: [
                 successEmbed(
-                    '✅ Channel Updated',
-                    `Level-up notifications will now be sent in ${channel}.`,
+                    '✅ הערוץ עודכן',
+                    `הודעות עלייה ברמה כעת ישלחו ב-${channel}.`,
                 ),
             ],
             flags: MessageFlags.Ephemeral,
@@ -342,7 +342,7 @@ async function handleChannel(selectInteraction, rootInteraction, cfg, guildId, c
             selectInteraction
                 .followUp({
                     embeds: [
-                        errorEmbed('Timed Out', 'No channel was selected. The setting was not changed.'),
+                        errorEmbed('תם הזמן', 'לא נבחר ערוץ. ההגדרה לא שונתה.'),
                     ],
                     flags: MessageFlags.Ephemeral,
                 })
@@ -356,18 +356,18 @@ async function handleChannel(selectInteraction, rootInteraction, cfg, guildId, c
 async function handleMessage(selectInteraction, rootInteraction, cfg, guildId, client) {
     const modal = new ModalBuilder()
         .setCustomId('level_cfg_message')
-        .setTitle('Edit Level-up Message')
+        .setTitle('ערוך הודעת עלייה ברמה')
         .addComponents(
             new ActionRowBuilder().addComponents(
                 new TextInputBuilder()
                     .setCustomId('message_input')
-                    .setLabel('Message ({user} and {level} are available)')
+                    .setLabel('הודעה ({user} ו-{level} זמינים)')
                     .setStyle(TextInputStyle.Paragraph)
-                    .setValue(cfg.levelUpMessage || '{user} has leveled up to level {level}!')
+                    .setValue(cfg.levelUpMessage || '{user} עלה לרמה {level}!')
                     .setMaxLength(500)
                     .setMinLength(1)
                     .setRequired(true)
-                    .setPlaceholder('{user} has leveled up to level {level}!'),
+                    .setPlaceholder('{user} עלה לרמה {level}!'),
             ),
         );
 
@@ -399,8 +399,8 @@ async function handleMessage(selectInteraction, rootInteraction, cfg, guildId, c
     await submitted.reply({
         embeds: [
             successEmbed(
-                '✅ Message Updated',
-                `Level-up message saved.\n**Preview:** ${preview}`,
+                '✅ ההודעה עודכנה',
+                `הודעת עלייה ברמה נשמרה.\n**תצוגה:** ${preview}`,
             ),
         ],
         flags: MessageFlags.Ephemeral,
@@ -417,12 +417,12 @@ async function handleXpRange(selectInteraction, rootInteraction, cfg, guildId, c
 
     const modal = new ModalBuilder()
         .setCustomId('level_cfg_xp_range')
-        .setTitle('Set XP Range per Message')
+        .setTitle('הגדר טווח XP לכל הודעה')
         .addComponents(
             new ActionRowBuilder().addComponents(
                 new TextInputBuilder()
                     .setCustomId('xp_min_input')
-                    .setLabel('Minimum XP (1–500)')
+                    .setLabel('XP מינימלי (1–500)')
                     .setStyle(TextInputStyle.Short)
                     .setValue(String(currentMin))
                     .setMaxLength(3)
@@ -433,7 +433,7 @@ async function handleXpRange(selectInteraction, rootInteraction, cfg, guildId, c
             new ActionRowBuilder().addComponents(
                 new TextInputBuilder()
                     .setCustomId('xp_max_input')
-                    .setLabel('Maximum XP (1–500)')
+                    .setLabel('XP מקסימלי (1–500)')
                     .setStyle(TextInputStyle.Short)
                     .setValue(String(currentMax))
                     .setMaxLength(3)
@@ -463,7 +463,7 @@ async function handleXpRange(selectInteraction, rootInteraction, cfg, guildId, c
     if (isNaN(newMin) || isNaN(newMax) || newMin < 1 || newMax < 1 || newMin > 500 || newMax > 500) {
         await submitted.reply({
             embeds: [
-                errorEmbed('Invalid Values', 'Both XP values must be whole numbers between **1** and **500**.'),
+                errorEmbed('ערכים לא חוקיים', 'שני ערכי ה-XP חייבים להיות מספרים שלמים בין **1** ל-**500**.'),
             ],
             flags: MessageFlags.Ephemeral,
         });
@@ -473,7 +473,7 @@ async function handleXpRange(selectInteraction, rootInteraction, cfg, guildId, c
     if (newMin > newMax) {
         await submitted.reply({
             embeds: [
-                errorEmbed('Invalid Range', 'Minimum XP cannot be greater than maximum XP.'),
+                errorEmbed('טווח לא חוקי', 'XP מינימלי לא יכול להיות גדול מ-XP מקסימלי.'),
             ],
             flags: MessageFlags.Ephemeral,
         });
@@ -486,8 +486,8 @@ async function handleXpRange(selectInteraction, rootInteraction, cfg, guildId, c
     await submitted.reply({
         embeds: [
             successEmbed(
-                '✅ XP Range Updated',
-                `Users will now earn between **${newMin}** and **${newMax}** XP per message.`,
+                '✅ טווח XP עודכן',
+                `משתמשים כעת יהרוויחו בין **${newMin}** ל-**${newMax}** XP לכל הודעה.`,
             ),
         ],
         flags: MessageFlags.Ephemeral,
@@ -501,12 +501,12 @@ async function handleXpRange(selectInteraction, rootInteraction, cfg, guildId, c
 async function handleXpCooldown(selectInteraction, rootInteraction, cfg, guildId, client) {
     const modal = new ModalBuilder()
         .setCustomId('level_cfg_cooldown')
-        .setTitle('Set XP Cooldown')
+        .setTitle('הגדר זמן המתנה XP')
         .addComponents(
             new ActionRowBuilder().addComponents(
                 new TextInputBuilder()
                     .setCustomId('cooldown_input')
-                    .setLabel('Cooldown in seconds (0–3600)')
+                    .setLabel('זמן המתנה בשניות (0–3600)')
                     .setStyle(TextInputStyle.Short)
                     .setValue(String(cfg.xpCooldown ?? 60))
                     .setMaxLength(4)
@@ -535,8 +535,8 @@ async function handleXpCooldown(selectInteraction, rootInteraction, cfg, guildId
         await submitted.reply({
             embeds: [
                 errorEmbed(
-                    'Invalid Value',
-                    'Cooldown must be a whole number between **0** and **3600** seconds.',
+                    'ערך לא חוקי',
+                    'זמן ההמתנה חייב להיות מספר שלם בין **0** ל-**3600** שניות.',
                 ),
             ],
             flags: MessageFlags.Ephemeral,
@@ -550,8 +550,8 @@ async function handleXpCooldown(selectInteraction, rootInteraction, cfg, guildId
     await submitted.reply({
         embeds: [
             successEmbed(
-                '✅ Cooldown Updated',
-                `XP cooldown set to **${newCooldown} second${newCooldown !== 1 ? 's' : ''}**.${newCooldown === 0 ? '\n> ⚠️ A cooldown of 0 means XP is granted on every message.' : ''}`,
+                '✅ זמן ההמתנה עודכן',
+                `זמן המתנה XP הוגדר ל-**${newCooldown} שנייה${newCooldown !== 1 ? 'ות' : ''}**.${newCooldown === 0 ? '\n> ⚠️ זמן המתנה של 0 פירושו שXP מוענק בכל הודעה.' : ''}`,
             ),
         ],
         flags: MessageFlags.Ephemeral,
@@ -559,4 +559,3 @@ async function handleXpCooldown(selectInteraction, rootInteraction, cfg, guildId
 
     await refreshDashboard(rootInteraction, cfg, guildId);
 }
-
