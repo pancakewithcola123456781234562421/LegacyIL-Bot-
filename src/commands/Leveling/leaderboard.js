@@ -6,7 +6,7 @@ import { getLeaderboard, getLevelingConfig, getXpForLevel } from '../../services
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
   data: new SlashCommandBuilder()
-    .setName('לוח_דירוג')
+    .setName('leaderboard')
     .setDescription("מציג את לוח הדירוג של הרמות בשרת")
     .setDMPermission(false),
   category: 'Leveling',
