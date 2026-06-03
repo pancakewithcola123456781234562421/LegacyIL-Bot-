@@ -8,17 +8,17 @@ import { createEmbed } from '../../utils/embeds.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
   data: new SlashCommandBuilder()
-    .setName('הסר_רמה')
+    .setName('levelremove')
     .setDescription('הסר רמות ממשתמש')
     .addUserOption((option) =>
       option
-        .setName('משתמש')
+        .setName('user')
         .setDescription('המשתמש להסרת רמות ממנו')
         .setRequired(true)
     )
     .addIntegerOption((option) =>
       option
-        .setName('רמות')
+        .setName('levels')
         .setDescription('מספר הרמות להסרה')
         .setRequired(true)
         .setMinValue(1)
@@ -51,8 +51,8 @@ export default {
         return;
       }
 
-      const targetUser = interaction.options.getUser('משתמש');
-      const levelsToRemove = interaction.options.getInteger('רמות');
+      const targetUser = interaction.options.getUser('user');
+      const levelsToRemove = interaction.options.getInteger('levels');
 
       const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
       if (!member) {
