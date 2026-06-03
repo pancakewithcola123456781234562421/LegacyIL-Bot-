@@ -1,8 +1,3 @@
-
-
-
-
-
 import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, MessageFlags } from 'discord.js';
 import { logger } from '../../utils/logger.js';
 import { handleInteractionError, TitanBotError, ErrorTypes } from '../../utils/errorHandler.js';
@@ -13,18 +8,18 @@ import { createEmbed } from '../../utils/embeds.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
   data: new SlashCommandBuilder()
-    .setName('levelremove')
-    .setDescription('Remove levels from a user')
+    .setName('הסר_רמה')
+    .setDescription('הסר רמות ממשתמש')
     .addUserOption((option) =>
       option
-        .setName('user')
-        .setDescription('The user to remove levels from')
+        .setName('משתמש')
+        .setDescription('המשתמש להסרת רמות ממנו')
         .setRequired(true)
     )
     .addIntegerOption((option) =>
       option
-        .setName('levels')
-        .setDescription('Number of levels to remove')
+        .setName('רמות')
+        .setDescription('מספר הרמות להסרה')
         .setRequired(true)
         .setMinValue(1)
     )
@@ -32,21 +27,14 @@ export default {
     .setDMPermission(false),
   category: 'Leveling',
 
-  
-
-
-
-
-
   async execute(interaction, config, client) {
     try {
       await InteractionHelper.safeDefer(interaction);
 
-      
       const hasPermission = await checkUserPermissions(
         interaction,
         PermissionFlagsBits.ManageGuild,
-        'You need ManageGuild permission to use this command.'
+        'אתה צריך הרשאת ניהול שרת כדי להשתמש בפקודה זו.'
       );
       if (!hasPermission) return;
 
@@ -56,44 +44,41 @@ export default {
           embeds: [
             new EmbedBuilder()
               .setColor('#f1c40f')
-              .setDescription('The leveling system is currently disabled on this server.')
+              .setDescription('מערכת הדירוג כרגע מכובה בשרת זה.')
           ],
           flags: MessageFlags.Ephemeral
         });
         return;
       }
 
-      const targetUser = interaction.options.getUser('user');
-      const levelsToRemove = interaction.options.getInteger('levels');
+      const targetUser = interaction.options.getUser('משתמש');
+      const levelsToRemove = interaction.options.getInteger('רמות');
 
-      
       const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
       if (!member) {
         throw new TitanBotError(
           `User ${targetUser.id} not found in this guild`,
           ErrorTypes.USER_INPUT,
-          'The specified user is not in this server.'
+          'המשתמש המצוין לא בשרת זה.'
         );
       }
 
-      
       const userData = await getUserLevelData(client, interaction.guildId, targetUser.id);
       if (userData.level === 0) {
         throw new TitanBotError(
           `User ${targetUser.id} is already at minimum level`,
           ErrorTypes.VALIDATION,
-          `${targetUser.tag} is already at level 0 and cannot have levels removed.`
+          `${targetUser.tag} כבר ברמה 0 ולא ניתן להסיר רמות.`
         );
       }
 
-      
       const updatedData = await removeLevels(client, interaction.guildId, targetUser.id, levelsToRemove);
 
       await InteractionHelper.safeEditReply(interaction, {
         embeds: [
           createEmbed({
-            title: '✅ Levels Removed',
-            description: `Successfully removed ${levelsToRemove} levels from ${targetUser.tag}.\n**New Level:** ${updatedData.level}`,
+            title: '✅ רמות הוסרו',
+            description: `הסרת בהצלחה ${levelsToRemove} רמות מ-${targetUser.tag}.\n**הרמה החדשה:** ${updatedData.level}`,
             color: 'success'
           })
         ]
@@ -111,5 +96,3 @@ export default {
     }
   }
 };
-
-
