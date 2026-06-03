@@ -6,11 +6,11 @@ import { getUserLevelData, getLevelingConfig, getXpForLevel } from '../../servic
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
   data: new SlashCommandBuilder()
-    .setName('דירוג')
+    .setName('rank')
     .setDescription("בדוק את הדירוג והרמה שלך או של משתמש אחר")
     .addUserOption((option) =>
       option
-        .setName('משתמש')
+        .setName('user')
         .setDescription('המשתמש לבדוק את הדירוג שלו')
         .setRequired(false)
     )
@@ -27,14 +27,14 @@ export default {
           embeds: [
             new EmbedBuilder()
               .setColor('#f1c40f')
-              .setDescription('מערכת הדירוג כרגע מכוbbה בשרת זה.')
+              .setDescription('מערכת הדירוג כרגע מכובה בשרת זה.')
           ],
           flags: MessageFlags.Ephemeral
         });
         return;
       }
 
-      const targetUser = interaction.options.getUser('משתמש') || interaction.user;
+      const targetUser = interaction.options.getUser('user') || interaction.user;
       const member = await interaction.guild.members
         .fetch(targetUser.id)
         .catch(() => null);
