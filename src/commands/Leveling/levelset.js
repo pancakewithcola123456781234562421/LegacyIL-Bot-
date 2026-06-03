@@ -1,8 +1,3 @@
-
-
-
-
-
 import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, MessageFlags } from 'discord.js';
 import { logger } from '../../utils/logger.js';
 import { handleInteractionError, TitanBotError, ErrorTypes } from '../../utils/errorHandler.js';
@@ -13,18 +8,18 @@ import { createEmbed } from '../../utils/embeds.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
   data: new SlashCommandBuilder()
-    .setName('levelset')
-    .setDescription("Set a user's level to a specific value")
+    .setName('הגדר_רמה')
+    .setDescription("הגדר את הרמה של משתמש לערך מסוים")
     .addUserOption((option) =>
       option
-        .setName('user')
-        .setDescription('The user to set the level for')
+        .setName('משתמש')
+        .setDescription('המשתמש להגדרת הרמה שלו')
         .setRequired(true)
     )
     .addIntegerOption((option) =>
       option
-        .setName('level')
-        .setDescription('The level to set')
+        .setName('רמה')
+        .setDescription('הרמה להגדרה')
         .setRequired(true)
         .setMinValue(0)
     )
@@ -32,21 +27,14 @@ export default {
     .setDMPermission(false),
   category: 'Leveling',
 
-  
-
-
-
-
-
   async execute(interaction, config, client) {
     try {
       await InteractionHelper.safeDefer(interaction);
 
-      
       const hasPermission = await checkUserPermissions(
         interaction,
         PermissionFlagsBits.ManageGuild,
-        'You need ManageGuild permission to use this command.'
+        'אתה צריך הרשאת ניהול שרת כדי להשתמש בפקודה זו.'
       );
       if (!hasPermission) return;
 
@@ -56,34 +44,32 @@ export default {
           embeds: [
             new EmbedBuilder()
               .setColor('#f1c40f')
-              .setDescription('The leveling system is currently disabled on this server.')
+              .setDescription('מערכת הדירוג כרגע מכובה בשרת זה.')
           ],
           flags: MessageFlags.Ephemeral
         });
         return;
       }
 
-      const targetUser = interaction.options.getUser('user');
-      const newLevel = interaction.options.getInteger('level');
+      const targetUser = interaction.options.getUser('משתמש');
+      const newLevel = interaction.options.getInteger('רמה');
 
-      
       const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
       if (!member) {
         throw new TitanBotError(
           `User ${targetUser.id} not found in this guild`,
           ErrorTypes.USER_INPUT,
-          'The specified user is not in this server.'
+          'המשתמש המצוין לא בשרת זה.'
         );
       }
 
-      
       const userData = await setUserLevel(client, interaction.guildId, targetUser.id, newLevel);
 
       await InteractionHelper.safeEditReply(interaction, {
         embeds: [
           createEmbed({
-            title: '✅ Level Set',
-            description: `Successfully set ${targetUser.tag}'s level to **${newLevel}**.\n**Total XP:** ${userData.totalXp}`,
+            title: '✅ הרמה הוגדרה',
+            description: `הגדרת בהצלחה את הרמה של ${targetUser.tag} ל-**${newLevel}**.\n**סה"כ XP:** ${userData.totalXp}`,
             color: 'success'
           })
         ]
@@ -101,5 +87,3 @@ export default {
     }
   }
 };
-
-
