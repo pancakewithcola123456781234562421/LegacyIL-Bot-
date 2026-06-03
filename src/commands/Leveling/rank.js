@@ -1,8 +1,3 @@
-
-
-
-
-
 import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from 'discord.js';
 import { logger } from '../../utils/logger.js';
 import { handleInteractionError, TitanBotError, ErrorTypes } from '../../utils/errorHandler.js';
@@ -11,22 +6,16 @@ import { getUserLevelData, getLevelingConfig, getXpForLevel } from '../../servic
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
   data: new SlashCommandBuilder()
-    .setName('rank')
-    .setDescription("Check your or another user's rank and level")
+    .setName('דירוג')
+    .setDescription("בדוק את הדירוג והרמה שלך או של משתמש אחר")
     .addUserOption((option) =>
       option
-        .setName('user')
-        .setDescription('The user to check the rank of')
+        .setName('משתמש')
+        .setDescription('המשתמש לבדוק את הדירוג שלו')
         .setRequired(false)
     )
     .setDMPermission(false),
   category: 'Leveling',
-
-  
-
-
-
-
 
   async execute(interaction, config, client) {
     try {
@@ -38,14 +27,14 @@ export default {
           embeds: [
             new EmbedBuilder()
               .setColor('#f1c40f')
-              .setDescription('The leveling system is currently disabled on this server.')
+              .setDescription('מערכת הדירוג כרגע מכוbbה בשרת זה.')
           ],
           flags: MessageFlags.Ephemeral
         });
         return;
       }
 
-      const targetUser = interaction.options.getUser('user') || interaction.user;
+      const targetUser = interaction.options.getUser('משתמש') || interaction.user;
       const member = await interaction.guild.members
         .fetch(targetUser.id)
         .catch(() => null);
@@ -54,7 +43,7 @@ export default {
         throw new TitanBotError(
           `User ${targetUser.id} not found in guild`,
           ErrorTypes.USER_INPUT,
-          'Could not find the specified user in this server.'
+          'לא ניתן למצוא את המשתמש המצוין בשרת זה.'
         );
       }
 
@@ -71,11 +60,11 @@ export default {
       const progressBar = createProgressBar(progress, 20);
 
       const embed = new EmbedBuilder()
-        .setTitle(`${member.displayName}'s Rank`)
+        .setTitle(`דירוג של ${member.displayName}`)
         .setThumbnail(member.displayAvatarURL({ dynamic: true }))
         .addFields(
           {
-            name: '📊 Level',
+            name: '📊 רמה',
             value: safeUserData.level.toString(),
             inline: true
           },
@@ -85,12 +74,12 @@ export default {
             inline: true
           },
           {
-            name: '✨ Total XP',
+            name: '✨ סה"כ XP',
             value: safeUserData.totalXp.toString(),
             inline: true
           },
           {
-            name: `Progress to Level ${safeUserData.level + 1}`,
+            name: `התקדמות לרמה ${safeUserData.level + 1}`,
             value: `${progressBar} ${progress}%`
           }
         )
@@ -109,12 +98,6 @@ export default {
   }
 };
 
-
-
-
-
-
-
 function createProgressBar(percentage, length = 10) {
   if (percentage < 0 || percentage > 100) {
     percentage = Math.max(0, Math.min(100, percentage));
@@ -122,6 +105,3 @@ function createProgressBar(percentage, length = 10) {
   const filled = Math.round((percentage / 100) * length);
   return '█'.repeat(filled) + '░'.repeat(length - filled);
 }
-
-
-
