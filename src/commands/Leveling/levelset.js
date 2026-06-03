@@ -8,17 +8,17 @@ import { createEmbed } from '../../utils/embeds.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
   data: new SlashCommandBuilder()
-    .setName('הגדר_רמה')
+    .setName('levelset')
     .setDescription("הגדר את הרמה של משתמש לערך מסוים")
     .addUserOption((option) =>
       option
-        .setName('משתמש')
+        .setName('user')
         .setDescription('המשתמש להגדרת הרמה שלו')
         .setRequired(true)
     )
     .addIntegerOption((option) =>
       option
-        .setName('רמה')
+        .setName('level')
         .setDescription('הרמה להגדרה')
         .setRequired(true)
         .setMinValue(0)
@@ -51,8 +51,8 @@ export default {
         return;
       }
 
-      const targetUser = interaction.options.getUser('משתמש');
-      const newLevel = interaction.options.getInteger('רמה');
+      const targetUser = interaction.options.getUser('user');
+      const newLevel = interaction.options.getInteger('level');
 
       const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
       if (!member) {
