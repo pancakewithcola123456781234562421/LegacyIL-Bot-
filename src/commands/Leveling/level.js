@@ -10,24 +10,24 @@ import levelDashboard from './modules/level_dashboard.js';
 
 export default {
     data: new SlashCommandBuilder()
-        .setName('דירוג')
+        .setName('level')
         .setDescription('ניהול מערכת הדירוג')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .setDMPermission(false)
         .addSubcommand((subcommand) =>
             subcommand
-                .setName('הגדרה')
+                .setName('setup')
                 .setDescription('הגדר את מערכת הדירוג — זה גם מפעיל אותה')
                 .addChannelOption((option) =>
                     option
-                        .setName('ערוץ')
+                        .setName('channel')
                         .setDescription('ערוץ לשליחת הודעות עלייה ברמה')
                         .addChannelTypes(ChannelType.GuildText)
                         .setRequired(true),
                 )
                 .addIntegerOption((option) =>
                     option
-                        .setName('xp_מינימום')
+                        .setName('xp_min')
                         .setDescription('XP מינימלי להעניק לכל הודעה (ברירת מחדל: 15)')
                         .setMinValue(1)
                         .setMaxValue(500)
@@ -35,7 +35,7 @@ export default {
                 )
                 .addIntegerOption((option) =>
                     option
-                        .setName('xp_מקסימום')
+                        .setName('xp_max')
                         .setDescription('XP מקסימלי להעניק לכל הודעה (ברירת מחדל: 25)')
                         .setMinValue(1)
                         .setMaxValue(500)
@@ -43,7 +43,7 @@ export default {
                 )
                 .addStringOption((option) =>
                     option
-                        .setName('הודעה')
+                        .setName('message')
                         .setDescription(
                             'הודעת עלייה ברמה. השתמש ב-{user} ו-{level} כמחזיקי מקום (ברירת מחדל מסופקת)',
                         )
@@ -52,7 +52,7 @@ export default {
                 )
                 .addIntegerOption((option) =>
                     option
-                        .setName('xp_זמן_המתנה')
+                        .setName('xp_cooldown')
                         .setDescription('שניות בין הענקת XP לכל משתמש (ברירת מחדל: 60)')
                         .setMinValue(0)
                         .setMaxValue(3600)
@@ -61,7 +61,7 @@ export default {
         )
         .addSubcommand((subcommand) =>
             subcommand
-                .setName('לוח_בקרה')
+                .setName('dashboard')
                 .setDescription('פתח את לוח הבקרה האינטראקטיבי להגדרת הדירוג'),
         ),
     category: 'Leveling',
@@ -86,18 +86,18 @@ export default {
 
             const subcommand = interaction.options.getSubcommand();
 
-            if (subcommand === 'לוח_בקרה') {
+            if (subcommand === 'dashboard') {
                 return levelDashboard.execute(interaction, config, client);
             }
 
-            if (subcommand === 'הגדרה') {
-                const channel = interaction.options.getChannel('ערוץ');
-                const xpMin = interaction.options.getInteger('xp_מינימום') ?? 15;
-                const xpMax = interaction.options.getInteger('xp_מקסימום') ?? 25;
+            if (subcommand === 'setup') {
+                const channel = interaction.options.getChannel('channel');
+                const xpMin = interaction.options.getInteger('xp_min') ?? 15;
+                const xpMax = interaction.options.getInteger('xp_max') ?? 25;
                 const message =
-                    interaction.options.getString('הודעה') ??
+                    interaction.options.getString('message') ??
                     '{user} עלה לרמה {level}!';
-                const xpCooldown = interaction.options.getInteger('xp_זמן_המתנה') ?? 60;
+                const xpCooldown = interaction.options.getInteger('xp_cooldown') ?? 60;
 
                 if (xpMin > xpMax) {
                     return await InteractionHelper.safeEditReply(interaction, {
@@ -125,7 +125,7 @@ export default {
                         embeds: [
                             errorEmbed(
                                 'מערכת הדירוג כבר פעילה',
-                                `מערכת הדירוג כבר מוגדרת בשרת זה (הודעות עלייה ברמה נשלחות ל-<#${existingConfig.levelUpChannel}>).\n\nהשתמש ב-\`/דירוג לוח_בקרה\` כדי לשנות הגדרות כלשהן.`,
+                                `מערכת הדירוג כבר מוגדרת בשרת זה (הודעות עלייה ברמה נשלחות ל-<#${existingConfig.levelUpChannel}>).\n\nהשתמש ב-\`/level dashboard\` כדי לשנות הגדרות כלשהן.`,
                             ),
                         ],
                     });
@@ -162,7 +162,7 @@ export default {
                                 `**XP לכל הודעה:** ${xpMin} – ${xpMax}\n` +
                                 `**זמן המתנה XP:** ${xpCooldown}s\n` +
                                 `**הודעת עלייה ברמה:** \`${message}\`\n\n` +
-                                `השתמש ב-\`/דירוג לוח_בקרה\` כדי לשנות כל הגדרה בכל עת.`,
+                                `השתמש ב-\`/level dashboard\` כדי לשנות כל הגדרה בכל עת.`,
                             color: 'success',
                         }),
                     ],
