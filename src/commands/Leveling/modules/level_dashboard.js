@@ -120,7 +120,7 @@ export default {
                 throw new TitanBotError(
                     'Leveling system not configured',
                     ErrorTypes.CONFIGURATION,
-                    'מערכת הדירוג עדיין לא הוגדרה. הרץ `/דירוג הגדרה` תחילה כדי להגדיר אותה.',
+                    'מערכת הדירוג עדיין לא הוגדרה. הרץ `/level setup` תחילה כדי להגדיר אותה.',
                 );
             }
 
