@@ -7,15 +7,15 @@ import { addJoinToCreateTrigger, getJoinToCreateConfig } from '../../../utils/da
 import { InteractionHelper } from '../../../utils/interactionHelper.js';
 export default {
     async execute(interaction, config, client) {
-        const category = interaction.options.getChannel('category');
-        const nameTemplate = interaction.options.getString('channel_name') || "{username}'s Room";
-        const userLimit = interaction.options.getInteger('user_limit') || 0;
+        const category = interaction.options.getChannel('קטגוריה');
+        const nameTemplate = interaction.options.getString('שם_ערוץ') || "חדר של {username}";
+        const userLimit = interaction.options.getInteger('מגבלת_משתמשים') || 0;
         const bitrate = interaction.options.getInteger('bitrate') || 64;
         const guildId = interaction.guild.id;
 
         try {
             const triggerChannel = await interaction.guild.channels.create({
-                name: 'Join to Create',
+                name: 'הצטרף כדי ליצור',
                 type: ChannelType.GuildVoice,
                 parent: category?.id,
                 userLimit: userLimit,
@@ -36,14 +36,14 @@ export default {
             });
 
             const embed = successEmbed(
-                `Created trigger channel: ${triggerChannel}\n\n` +
-                `**Settings:**\n` +
-                `• Temporary Channel Name Template: \`${nameTemplate}\`\n` +
-                `• User Limit: ${userLimit === 0 ? 'No limit' : userLimit + ' users'}\n` +
+                `ערוץ הטריגר נוצר: ${triggerChannel}\n\n` +
+                `**הגדרות:**\n` +
+                `• תבנית שם ערוץ זמני: \`${nameTemplate}\`\n` +
+                `• מגבלת משתמשים: ${userLimit === 0 ? 'ללא מגבלה' : userLimit + ' משתמשים'}\n` +
                 `• Bitrate: ${bitrate} kbps\n` +
-                `${category ? `• Category: ${category.name}` : '• Category: None (root level)'}\n\n` +
-                `When users join this channel, a temporary voice channel will be created for them.`,
-                '✅ Join to Create Setup Complete'
+                `${category ? `• קטגוריה: ${category.name}` : '• קטגוריה: ללא (בשורה הראשית)'}\n\n` +
+                `כאשר משתמשים יצטרפו לערוץ זה, ערוץ קול זמני יווצר בשבילם.`,
+                '✅ הגדרת הצטרף כדי ליצור הושלמה'
             );
 
             try {
@@ -69,13 +69,10 @@ export default {
             }
             logger.error('Error in JoinToCreate setup:', error);
             throw new TitanBotError(
-                `Setup failed: ${error.message}`,
+                `ההגדרה נכשלה: ${error.message}`,
                 ErrorTypes.DISCORD_API,
-                'Failed to set up Join to Create system.'
+                'נכשל לעמד את מערכת הצטרף כדי ליצור.'
             );
         }
     }
 };
-
-
-
