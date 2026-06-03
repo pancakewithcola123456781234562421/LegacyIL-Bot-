@@ -10,50 +10,50 @@ import levelDashboard from './modules/level_dashboard.js';
 
 export default {
     data: new SlashCommandBuilder()
-        .setName('level')
-        .setDescription('Manage the leveling system')
+        .setName('דירוג')
+        .setDescription('ניהול מערכת הדירוג')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .setDMPermission(false)
         .addSubcommand((subcommand) =>
             subcommand
-                .setName('setup')
-                .setDescription('Set up the leveling system — this also enables it')
+                .setName('הגדרה')
+                .setDescription('הגדר את מערכת הדירוג — זה גם מפעיל אותה')
                 .addChannelOption((option) =>
                     option
-                        .setName('channel')
-                        .setDescription('Channel to send level-up notifications in')
+                        .setName('ערוץ')
+                        .setDescription('ערוץ לשליחת הודעות עלייה ברמה')
                         .addChannelTypes(ChannelType.GuildText)
                         .setRequired(true),
                 )
                 .addIntegerOption((option) =>
                     option
-                        .setName('xp_min')
-                        .setDescription('Minimum XP awarded per message (default: 15)')
+                        .setName('xp_מינימום')
+                        .setDescription('XP מינימלי להעניק לכל הודעה (ברירת מחדל: 15)')
                         .setMinValue(1)
                         .setMaxValue(500)
                         .setRequired(false),
                 )
                 .addIntegerOption((option) =>
                     option
-                        .setName('xp_max')
-                        .setDescription('Maximum XP awarded per message (default: 25)')
+                        .setName('xp_מקסימום')
+                        .setDescription('XP מקסימלי להעניק לכל הודעה (ברירת מחדל: 25)')
                         .setMinValue(1)
                         .setMaxValue(500)
                         .setRequired(false),
                 )
                 .addStringOption((option) =>
                     option
-                        .setName('message')
+                        .setName('הודעה')
                         .setDescription(
-                            'Level-up message. Use {user} and {level} as placeholders (default provided)',
+                            'הודעת עלייה ברמה. השתמש ב-{user} ו-{level} כמחזיקי מקום (ברירת מחדל מסופקת)',
                         )
                         .setMaxLength(500)
                         .setRequired(false),
                 )
                 .addIntegerOption((option) =>
                     option
-                        .setName('xp_cooldown')
-                        .setDescription('Seconds between XP grants per user (default: 60)')
+                        .setName('xp_זמן_המתנה')
+                        .setDescription('שניות בין הענקת XP לכל משתמש (ברירת מחדל: 60)')
                         .setMinValue(0)
                         .setMaxValue(3600)
                         .setRequired(false),
@@ -61,8 +61,8 @@ export default {
         )
         .addSubcommand((subcommand) =>
             subcommand
-                .setName('dashboard')
-                .setDescription('Open the interactive leveling configuration dashboard'),
+                .setName('לוח_בקרה')
+                .setDescription('פתח את לוח הבקרה האינטראקטיבי להגדרת הדירוג'),
         ),
     category: 'Leveling',
 
@@ -77,8 +77,8 @@ export default {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            'Missing Permissions',
-                            'You need the **Manage Server** permission to use this command.',
+                            'הרשאות חסרות',
+                            'אתה צריך את ההרשאה **ניהול שרת** כדי להשתמש בפקודה זו.',
                         ),
                     ],
                 });
@@ -86,25 +86,25 @@ export default {
 
             const subcommand = interaction.options.getSubcommand();
 
-            if (subcommand === 'dashboard') {
+            if (subcommand === 'לוח_בקרה') {
                 return levelDashboard.execute(interaction, config, client);
             }
 
-            if (subcommand === 'setup') {
-                const channel = interaction.options.getChannel('channel');
-                const xpMin = interaction.options.getInteger('xp_min') ?? 15;
-                const xpMax = interaction.options.getInteger('xp_max') ?? 25;
+            if (subcommand === 'הגדרה') {
+                const channel = interaction.options.getChannel('ערוץ');
+                const xpMin = interaction.options.getInteger('xp_מינימום') ?? 15;
+                const xpMax = interaction.options.getInteger('xp_מקסימום') ?? 25;
                 const message =
-                    interaction.options.getString('message') ??
-                    '{user} has leveled up to level {level}!';
-                const xpCooldown = interaction.options.getInteger('xp_cooldown') ?? 60;
+                    interaction.options.getString('הודעה') ??
+                    '{user} עלה לרמה {level}!';
+                const xpCooldown = interaction.options.getInteger('xp_זמן_המתנה') ?? 60;
 
                 if (xpMin > xpMax) {
                     return await InteractionHelper.safeEditReply(interaction, {
                         embeds: [
                             errorEmbed(
-                                'Invalid XP Range',
-                                `Minimum XP (**${xpMin}**) cannot be greater than maximum XP (**${xpMax}**).`,
+                                'טווח XP לא חוקי',
+                                `XP מינימלי (**${xpMin}**) לא יכול להיות גדול מ-XP מקסימלי (**${xpMax}**).`,
                             ),
                         ],
                     });
@@ -114,7 +114,7 @@ export default {
                     throw new TitanBotError(
                         'Bot missing permissions in the specified channel',
                         ErrorTypes.PERMISSION,
-                        `I need **SendMessages** and **EmbedLinks** permissions in ${channel} to send level-up notifications.`,
+                        `אני צריך את ההרשאות **שליחת הודעות** ו**הטמעת קישורים** ב-${channel} כדי לשלוח הודעות עלייה ברמה.`,
                     );
                 }
 
@@ -124,8 +124,8 @@ export default {
                     return await InteractionHelper.safeEditReply(interaction, {
                         embeds: [
                             errorEmbed(
-                                'Leveling System Already Active',
-                                `The leveling system is already set up on this server (level-up notifications go to <#${existingConfig.levelUpChannel}>).\n\nUse \`/level dashboard\` to adjust any settings.`,
+                                'מערכת הדירוג כבר פעילה',
+                                `מערכת הדירוג כבר מוגדרת בשרת זה (הודעות עלייה ברמה נשלחות ל-<#${existingConfig.levelUpChannel}>).\n\nהשתמש ב-\`/דירוג לוח_בקרה\` כדי לשנות הגדרות כלשהן.`,
                             ),
                         ],
                     });
@@ -155,14 +155,14 @@ export default {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         createEmbed({
-                            title: '✅ Leveling System Set Up',
+                            title: '✅ מערכת הדירוג הוגדרה',
                             description:
-                                `The leveling system is now **enabled** and ready to go.\n\n` +
-                                `**Level-up Channel:** ${channel}\n` +
-                                `**XP per Message:** ${xpMin} – ${xpMax}\n` +
-                                `**XP Cooldown:** ${xpCooldown}s\n` +
-                                `**Level-up Message:** \`${message}\`\n\n` +
-                                `Use \`/level dashboard\` to adjust any of these settings at any time.`,
+                                `מערכת הדירוג כעת **מופעלת** וממשיכה להעבוד.\n\n` +
+                                `**ערוץ עלייה ברמה:** ${channel}\n` +
+                                `**XP לכל הודעה:** ${xpMin} – ${xpMax}\n` +
+                                `**זמן המתנה XP:** ${xpCooldown}s\n` +
+                                `**הודעת עלייה ברמה:** \`${message}\`\n\n` +
+                                `השתמש ב-\`/דירוג לוח_בקרה\` כדי לשנות כל הגדרה בכל עת.`,
                             color: 'success',
                         }),
                     ],
