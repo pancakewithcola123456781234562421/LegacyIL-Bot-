@@ -9,12 +9,12 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
     data: new SlashCommandBuilder()
         .setName("warnings")
-        .setDescription("View all warnings for a user")
+        .setDescription("צפה בכל האזהרות עבור משתמש")
         .addUserOption((o) =>
             o
                 .setName("target")
                 .setRequired(true)
-                .setDescription("User to check warnings for"),
+                .setDescription("משתמש לבדיקת אזהרות שלו"),
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
     category: "moderation",
@@ -42,8 +42,8 @@ export default {
                 await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         createEmbed({ 
-                            title: `Warnings: ${target.tag}`, 
-                            description: "✅ This user has no recorded warnings." 
+                            title: `אזהרות: ${target.tag}`, 
+                            description: "✅ למשתמש זה אין אזהרות מתועדות." 
                         }).setColor(getColor('success')),
                     ],
                 });
@@ -51,16 +51,16 @@ export default {
             }
 
             const embed = createEmbed({ 
-                title: `Warnings: ${target.tag}`, 
-                description: `Total Warnings: **${totalWarns}**` 
+                title: `אזהרות: ${target.tag}`, 
+                description: `סה"כ אזהרות: **${totalWarns}**` 
             }).setColor(getColor('warning'));
 
             const warningFields = validWarnings
                 .map((w, i) => {
                     const discordTimestamp = Math.floor(w.timestamp / 1000);
                     return {
-                        name: `[#${i + 1}] Reason: ${w.reason.substring(0, 100)}`,
-                        value: `**Moderator:** <@${w.moderatorId}>\n**Date:** <t:${discordTimestamp}:F> (<t:${discordTimestamp}:R>)`,
+                        name: `[#${i + 1}] סיבה: ${w.reason.substring(0, 100)}`,
+                        value: `**מנחה:** <@${w.moderatorId}>\n**תאריך:** <t:${discordTimestamp}:F> (<t:${discordTimestamp}:R>)`,
                         inline: false,
                     };
                 })
@@ -72,10 +72,10 @@ export default {
                 client,
                 guild: interaction.guild,
                 event: {
-                    action: "Warnings Viewed",
+                    action: "צפייה בהתראות",
                     target: `${target.tag} (${target.id})`,
                     executor: `${interaction.user.tag} (${interaction.user.id})`,
-                    reason: `Viewed ${totalWarns} warnings`,
+                    reason: `צפה ב-${totalWarns} התראות`,
                     metadata: {
                         userId: target.id,
                         moderatorId: interaction.user.id,
@@ -91,6 +91,3 @@ export default {
         }
     }
 };
-
-
-
