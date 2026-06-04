@@ -15,15 +15,15 @@ const EVENT_TYPES_BY_CATEGORY = Object.values(EVENT_TYPES).reduce((acc, eventTyp
 }, {});
 
 const CATEGORY_MAP = [
-    ['moderation',   '🔨 Moderation'],
-    ['ticket',       '🎫 Ticket Events'],
-    ['message',      '✉️ Message Events'],
-    ['role',         '🏷️ Role Events'],
-    ['member',       '👥 Member Events'],
-    ['leveling',     '📈 Leveling Events'],
-    ['reactionrole', '🎭 Reaction Role Events'],
-    ['giveaway',     '🎁 Giveaway Events'],
-    ['counter',      '📊 Counter Events'],
+    ['moderation',   '🔨 ניהול'],
+    ['ticket',       '🎫 אירועי כרטיסים'],
+    ['message',      '✉️ אירועי הודעות'],
+    ['role',         '🏷️ אירועי תפקידים'],
+    ['member',       '👥 אירועי חברים'],
+    ['leveling',     '📈 אירועי דירוג'],
+    ['reactionrole', '🎭 אירועי תפקיד תגובה'],
+    ['giveaway',     '🎁 אירועי מתנות'],
+    ['counter',      '📊 אירועי מונה'],
 ];
 
 function getCategoryStatus(enabledEvents, category, auditEnabled) {
@@ -36,9 +36,9 @@ function getCategoryStatus(enabledEvents, category, auditEnabled) {
 }
 
 async function formatChannelMention(guild, id) {
-    if (!id) return '`Not configured`';
+    if (!id) return '`לא מוגדר`';
     const channel = guild.channels.cache.get(id) ?? await guild.channels.fetch(id).catch(() => null);
-    return channel ? channel.toString() : `⚠️ Missing (${id})`;
+    return channel ? channel.toString() : `⚠️ חסר (${id})`;
 }
 
 export async function buildLoggingDashboardView(interaction, client) {
@@ -62,13 +62,13 @@ export async function buildLoggingDashboardView(interaction, client) {
     }).join('\n');
 
     const embed = new EmbedBuilder()
-        .setTitle('📋 Logging Dashboard')
-        .setDescription(`Manage audit logging for **${interaction.guild.name}**. Category buttons toggle logging instantly.`)
+        .setTitle('📋 לוח בקרה הרישום')
+        .setDescription(`ניהול רישום ביקורת עבור **${interaction.guild.name}**. כפתורי קטגוריה משנים את הרישום באופן מידי.`)
         .setColor(auditEnabled ? getColor('success') : getColor('warning'))
         .addFields(
             {
-                name: '🧾 Audit Logging',
-                value: auditEnabled ? '✅ Enabled' : '❌ Disabled',
+                name: '🧾 רישום ביקורת',
+                value: auditEnabled ? '✅ מופעל' : '❌ מכובה',
                 inline: true,
             },
             {
@@ -82,31 +82,31 @@ export async function buildLoggingDashboardView(interaction, client) {
                 inline: true,
             },
             {
-                name: '📡 Log Channels',
+                name: '📡 ערוצי רישום',
                 value: [
-                    `**Audit:** ${auditChannel}`,
-                    `**Ticket Logs:** ${lifecycleChannel}`,
-                    `**Ticket Transcripts:** ${transcriptChannel}`,
+                    `**ביקורת:** ${auditChannel}`,
+                    `**רישום כרטיסים:** ${lifecycleChannel}`,
+                    `**תמלול כרטיסים:** ${transcriptChannel}`,
                 ].join('\n'),
                 inline: false,
             },
             {
-                name: '📋 Event Categories',
+                name: '📋 קטגוריות אירועים',
                 value: categoryLines,
                 inline: false,
             },
             {
-                name: '🧹 Ignore Filters',
-                value: `Users: **${ignoredUsers.length}**\nChannels: **${ignoredChannels.length}**`,
+                name: '🧹 מסננים התעלמות',
+                value: `משתמשים: **${ignoredUsers.length}**\nערוצים: **${ignoredChannels.length}**`,
                 inline: true,
             },
             {
-                name: '🕒 Last Refresh',
+                name: '🕒 רענון אחרון',
                 value: `<t:${Math.floor(Date.now() / 1000)}:R>`,
                 inline: true,
             },
         )
-        .setFooter({ text: 'Use /logging setchannel to configure the audit channel  •  /ticket setup or /ticket dashboard to configure ticket channels' })
+        .setFooter({ text: 'השתמש ב-/logging setchannel כדי להגדיר את ערוץ הביקורת  •  /ticket setup או /ticket dashboard כדי להגדיר ערוצי כרטיסים' })
         .setTimestamp();
 
     const components = createLoggingDashboardComponents(loggingStatus.enabledEvents, auditEnabled);
@@ -118,7 +118,7 @@ export default {
         try {
             if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageGuild)) {
                 return InteractionHelper.safeReply(interaction, {
-                    embeds: [errorEmbed('Permission Denied', 'You need **Manage Server** permissions to view the logging dashboard.')],
+                    embeds: [errorEmbed('הרשאה נדחתה', 'אתה צריך הרשאות **ניהול שרת** כדי לצפות בלוח בקרה הרישום.')],
                 });
             }
 
@@ -128,7 +128,7 @@ export default {
         } catch (error) {
             logger.error('logging_dashboard error:', error);
             await InteractionHelper.safeEditReply(interaction, {
-                embeds: [errorEmbed('Dashboard Error', 'Failed to load the logging dashboard.')],
+                embeds: [errorEmbed('שגיאת לוח בקרה', 'נכשל לטעון את לוח בקרה הרישום.')],
             });
         }
     },
