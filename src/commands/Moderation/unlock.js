@@ -9,7 +9,7 @@ export default {
     data: new SlashCommandBuilder()
         .setName("unlock")
         .setDescription(
-            "Unlocks the current channel (allows @everyone to send messages again).",
+            "פתח את הערוץ הנוכחי (מאפשר ל-@everyone לשלוח הודעות שוב).",
         )
 .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
     category: "moderation",
@@ -33,8 +33,8 @@ export default {
             return await InteractionHelper.safeEditReply(interaction, {
                 embeds: [
                     errorEmbed(
-                        "Permission Denied",
-                        "You need the `Manage Channels` permission to unlock channels.",
+                        "הרשאה נדחתה",
+                        "אתה צריך הרשאת `ניהול ערוצים` כדי לפתוח ערוצים.",
                     ),
                 ],
             });
@@ -53,8 +53,8 @@ export default {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            "Channel Already Unlocked",
-                            `${channel} is not explicitly locked (everyone can already send messages).`,
+                            "הערוץ כבר פתוח",
+                            `${channel} לא נעול בצורה מפורשת (כולם יכולים כבר לשלוח הודעות).`,
                         ),
                     ],
                 });
@@ -65,23 +65,23 @@ export default {
                 { SendMessages: true },
                 {
                     type: 0,
-                    reason: `Channel unlocked by ${interaction.user.tag}`,
+                    reason: `הערוץ נפתח על ידי ${interaction.user.tag}`,
 },
             );
 
             const unlockEmbed = createEmbed(
-                "🔓 Channel Unlocked (Action Log)",
-                `${channel} has been unlocked by ${interaction.user}.`,
+                "🔓 ערוץ נפתח (יומן פעולות)",
+                `${channel} נפתח על ידי ${interaction.user}.`,
             )
 .setColor(getColor('success'))
                 .addFields(
                     {
-                        name: "Channel",
+                        name: "ערוץ",
                         value: channel.toString(),
                         inline: true,
                     },
                     {
-                        name: "Moderator",
+                        name: "מנהל",
                         value: `${interaction.user.tag} (${interaction.user.id})`,
                         inline: true,
                     },
@@ -91,7 +91,7 @@ export default {
                 client,
                 guild: interaction.guild,
                 event: {
-                    action: "Channel Unlocked",
+                    action: "ערוץ נפתח",
                     target: channel.toString(),
                     executor: `${interaction.user.tag} (${interaction.user.id})`,
                     metadata: {
@@ -104,8 +104,8 @@ export default {
             await InteractionHelper.safeEditReply(interaction, {
                 embeds: [
                     successEmbed(
-                        `🔓 **Channel Unlocked**`,
-                        `${channel} is now unlocked. You may speak now.`,
+                        `🔓 **ערוץ נפתח**`,
+                        `${channel} כעת פתוח. אתה יכול לדבר עכשיו.`,
                     ),
                 ],
             });
@@ -114,13 +114,10 @@ export default {
             await InteractionHelper.safeEditReply(interaction, {
                 embeds: [
                     errorEmbed(
-                        "An unexpected error occurred while trying to unlock the channel. Check my permissions (I need 'Manage Channels').",
+                        "שגיאה בלתי צפויה התרחשה בעת ניסיון פתיחת הערוץ. בדוק את ההרשאות שלי (אני צריך 'ניהול ערוצים').",
                     ),
                 ],
             });
         }
     }
 };
-
-
-
