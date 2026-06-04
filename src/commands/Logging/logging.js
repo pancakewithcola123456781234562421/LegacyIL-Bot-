@@ -10,75 +10,75 @@ import filter from './modules/logging_filter.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('logging')
-        .setDescription('Manage audit logging for this server.')
+        .setDescription('ניהול רישום ביקורת לשרת זה.')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .setDMPermission(false)
         .addSubcommand((subcommand) =>
             subcommand
                 .setName('dashboard')
-                .setDescription('Open the interactive logging dashboard — view status and toggle event categories.'),
+                .setDescription('פתח את לוח הבקרה האינטראקטיבי לרישום — צפה בסטטוס וכיבוי/הפעלת קטגוריות אירועים.'),
         )
         .addSubcommand((subcommand) =>
             subcommand
                 .setName('setchannel')
-                .setDescription('Set the audit log channel for this server.')
+                .setDescription('הגדר את ערוץ רישום הביקורת לשרת זה.')
                 .addChannelOption((option) =>
                     option
                         .setName('channel')
-                        .setDescription('The text channel for audit logs.')
+                        .setDescription('ערוץ הטקסט לרישום הביקורת.')
                         .addChannelTypes(ChannelType.GuildText)
                         .setRequired(false),
                 )
                 .addBooleanOption((option) =>
                     option
                         .setName('disable')
-                        .setDescription('Set to True to disable audit logging entirely.')
+                        .setDescription('הגדר ל-True כדי להשבית את רישום הביקורת לחלוטין.')
                         .setRequired(false),
                 ),
         )
         .addSubcommandGroup((group) =>
             group
                 .setName('filter')
-                .setDescription('Manage the log ignore list (users and channels to skip).')
+                .setDescription('ניהול רשימת התעלמות הרישום (משתמשים וערוצים לדילוג).')
                 .addSubcommand((subcommand) =>
                     subcommand
                         .setName('add')
-                        .setDescription('Add a user or channel to the log ignore list.')
+                        .setDescription('הוסף משתמש או ערוץ לרשימת התעלמות הרישום.')
                         .addStringOption((option) =>
                             option
                                 .setName('type')
-                                .setDescription('Whether to ignore a user or channel.')
+                                .setDescription('האם להתעלם ממשתמש או ערוץ.')
                                 .setRequired(true)
                                 .addChoices(
-                                    { name: 'User', value: 'user' },
-                                    { name: 'Channel', value: 'channel' },
+                                    { name: 'משתמש', value: 'user' },
+                                    { name: 'ערוץ', value: 'channel' },
                                 ),
                         )
                         .addStringOption((option) =>
                             option
                                 .setName('id')
-                                .setDescription('The ID of the user or channel to ignore.')
+                                .setDescription('ה-ID של המשתמש או הערוץ להתעלמות.')
                                 .setRequired(true),
                         ),
                 )
                 .addSubcommand((subcommand) =>
                     subcommand
                         .setName('remove')
-                        .setDescription('Remove a user or channel from the log ignore list.')
+                        .setDescription('הסר משתמש או ערוץ מרשימת התעלמות הרישום.')
                         .addStringOption((option) =>
                             option
                                 .setName('type')
-                                .setDescription('Whether this is a user or channel.')
+                                .setDescription('האם זה משתמש או ערוץ.')
                                 .setRequired(true)
                                 .addChoices(
-                                    { name: 'User', value: 'user' },
-                                    { name: 'Channel', value: 'channel' },
+                                    { name: 'משתמש', value: 'user' },
+                                    { name: 'ערוץ', value: 'channel' },
                                 ),
                         )
                         .addStringOption((option) =>
                             option
                                 .setName('id')
-                                .setDescription('The ID of the user or channel to remove from the ignore list.')
+                                .setDescription('ה-ID של המשתמש או הערוץ להסרה מרשימת ההתעלמות.')
                                 .setRequired(true),
                         ),
                 ),
@@ -105,12 +105,12 @@ export default {
             }
 
             await InteractionHelper.safeEditReply(interaction, {
-                embeds: [errorEmbed('Unknown Subcommand', 'This subcommand is not recognised.')],
+                embeds: [errorEmbed('Subcommand לא ידוע', 'ה-Subcommand הזה לא מזוהה.')],
             });
         } catch (error) {
             logger.error('logging command error:', error);
             await InteractionHelper.safeReply(interaction, {
-                embeds: [errorEmbed('Error', 'An unexpected error occurred.')],
+                embeds: [errorEmbed('שגיאה', 'אירעה שגיאה בלתי צפויה.')],
                 ephemeral: true,
             }).catch(() => {});
         }
