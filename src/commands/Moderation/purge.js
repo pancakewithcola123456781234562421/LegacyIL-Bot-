@@ -9,11 +9,11 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
     data: new SlashCommandBuilder()
     .setName("purge")
-    .setDescription("Delete a specific amount of messages")
+    .setDescription("מחק כמות מסוימת של הודעות")
     .addIntegerOption((option) =>
       option
         .setName("amount")
-        .setDescription("Number of messages (1-100)")
+        .setDescription("מספר הודעות (1-100)")
         .setRequired(true),
     )
 .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
@@ -34,8 +34,8 @@ export default {
       return await InteractionHelper.safeEditReply(interaction, {
         embeds: [
           errorEmbed(
-            "Permission Denied",
-            "You need the `Manage Messages` permission to purge messages.",
+            "הרשאה נדחתה",
+            "אתה צריך הרשאת `ניהול הודעות` כדי למחוק הודעות.",
           ),
         ],
       });
@@ -47,8 +47,8 @@ export default {
       return await InteractionHelper.safeEditReply(interaction, {
         embeds: [
           errorEmbed(
-            "Invalid Amount",
-            "Please specify a number between 1 and 100.",
+            "כמות לא חוקית",
+            "אנא ציין מספר בין 1 ל-100.",
           ),
         ],
       });
@@ -61,8 +61,8 @@ export default {
         return await InteractionHelper.safeEditReply(interaction, {
           embeds: [
             warningEmbed(
-              "You're purging messages too fast. Please wait a minute before trying again.",
-              "⏳ Rate Limited"
+              "אתה מוחק הודעות מהר מדי. אנא חכה דקה לפני שתנסה שוב.",
+              "⏳ מוגבל בקצב"
             ),
           ],
           flags: MessageFlags.Ephemeral,
@@ -74,28 +74,28 @@ export default {
       const deletedCount = deleted.size;
 
       const purgeEmbed = createEmbed(
-        "🗑️ Messages Purged (Action Log)",
-        `${deletedCount} messages were deleted by ${interaction.user}.`,
+        "🗑️ הודעות נמחקו (יומן פעולות)",
+        `${deletedCount} הודעות נמחקו על ידי ${interaction.user}.`,
       )
 .setColor(getColor('moderation'))
         .addFields(
-          { name: "Channel", value: channel.toString(), inline: true },
+          { name: "ערוץ", value: channel.toString(), inline: true },
           {
-            name: "Moderator",
+            name: "מנהל",
             value: `${interaction.user.tag} (${interaction.user.id})`,
             inline: true,
           },
-          { name: "Count", value: `${deletedCount} messages`, inline: false },
+          { name: "ספירה", value: `${deletedCount} הודעות`, inline: false },
         );
 
       await logEvent({
         client,
         guild: interaction.guild,
         event: {
-          action: "Messages Purged",
-          target: `${channel} (${deletedCount} messages)`,
+          action: "הודעות נמחקו",
+          target: `${channel} (${deletedCount} הודעות)`,
           executor: `${interaction.user.tag} (${interaction.user.id})`,
-          reason: `Deleted ${deletedCount} messages`,
+          reason: `נמחקו ${deletedCount} הודעות`,
           metadata: {
             channelId: channel.id,
             messageCount: deletedCount,
@@ -107,7 +107,7 @@ export default {
 
       await InteractionHelper.safeEditReply(interaction, {
         embeds: [
-          successEmbed(`🗑️ Deleted ${deletedCount} messages in ${channel}.`),
+          successEmbed(`🗑️ נמחקו ${deletedCount} הודעות ב-${channel}.`),
         ],
 flags: MessageFlags.Ephemeral,
       });
@@ -122,7 +122,7 @@ flags: MessageFlags.Ephemeral,
       await InteractionHelper.safeEditReply(interaction, {
         embeds: [
           errorEmbed(
-            "An unexpected error occurred during message deletion. Note: Messages older than 14 days cannot be bulk deleted.",
+            "אירעה שגיאה בלתי צפויה במהלך מחיקת הודעות. הערה: הודעות ישנות מ-14 ימים לא יכולות להיות מחוקות בצובר.",
           ),
         ],
         flags: MessageFlags.Ephemeral,
@@ -130,6 +130,3 @@ flags: MessageFlags.Ephemeral,
     }
   }
 };
-
-
-
