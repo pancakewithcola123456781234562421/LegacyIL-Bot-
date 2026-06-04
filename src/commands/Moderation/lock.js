@@ -9,7 +9,7 @@ export default {
     data: new SlashCommandBuilder()
     .setName("lock")
     .setDescription(
-      "Locks the current channel (prevents @everyone from sending messages).",
+      "נעל את הערוץ הנוכחי (מונע מ-@everyone לשלוח הודעות).",
     )
 .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
   category: "moderation",
@@ -29,8 +29,8 @@ export default {
       return await InteractionHelper.safeEditReply(interaction, {
         embeds: [
           errorEmbed(
-            "Permission Denied",
-            "You need the `Manage Channels` permission to lock channels.",
+            "הרשאה נדחתה",
+            "אתה צריך הרשאת `ניהול ערוצים` כדי לנעול ערוצים.",
           ),
         ],
       });
@@ -44,8 +44,8 @@ export default {
         return await InteractionHelper.safeEditReply(interaction, {
           embeds: [
             errorEmbed(
-              "Channel Already Locked",
-              `${channel} is already locked.`,
+              "הערוץ כבר נעול",
+              `${channel} כבר נעול.`,
             ),
           ],
         });
@@ -54,18 +54,18 @@ export default {
       await channel.permissionOverwrites.edit(
         everyoneRole,
         { SendMessages: false },
-{ type: 0, reason: `Channel locked by ${interaction.user.tag}` },
+{ type: 0, reason: `הערוץ נעול על ידי ${interaction.user.tag}` },
       );
 
       const lockEmbed = createEmbed(
-        "🔒 Channel Locked (Action Log)",
-        `${channel} has been locked down by ${interaction.user}.`,
+        "🔒 ערוץ נעול (יומן פעולות)",
+        `${channel} נעול על ידי ${interaction.user}.`,
       )
 .setColor(getColor('moderation'))
         .addFields(
-          { name: "Channel", value: channel.toString(), inline: true },
+          { name: "ערוץ", value: channel.toString(), inline: true },
           {
-            name: "Moderator",
+            name: "מנהל",
             value: `${interaction.user.tag} (${interaction.user.id})`,
             inline: true,
           },
@@ -75,7 +75,7 @@ export default {
         client,
         guild: interaction.guild,
         event: {
-          action: "Channel Locked",
+          action: "ערוץ נעול",
           target: channel.toString(),
           executor: `${interaction.user.tag} (${interaction.user.id})`,
           metadata: {
@@ -89,8 +89,8 @@ export default {
       await InteractionHelper.safeEditReply(interaction, {
         embeds: [
           successEmbed(
-            `🔒 **Channel Locked**`,
-            `${channel} is now locked down. No one can speak here now.`,
+            `🔒 **ערוץ נעול**`,
+            `${channel} כעת נעול. אף אחד לא יכול לדבר כאן כעת.`,
           ),
         ],
       });
@@ -99,13 +99,10 @@ export default {
       await InteractionHelper.safeEditReply(interaction, {
         embeds: [
           errorEmbed(
-            "An unexpected error occurred while trying to lock the channel. Check my permissions (I need 'Manage Channels').",
+            "אירעה שגיאה בלתי צפויה בעת ניסיון נעילת הערוץ. בדוק את ההרשאות שלי (אני צריך 'ניהול ערוצים').",
           ),
         ],
       });
     }
   }
 };
-
-
-
