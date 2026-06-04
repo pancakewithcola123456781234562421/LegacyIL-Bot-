@@ -8,16 +8,16 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
     data: new SlashCommandBuilder()
         .setName("unban")
-        .setDescription("Unban a user from the server")
+        .setDescription("הסר חסימה של משתמש מהשרת")
         .addUserOption(option =>
             option
                 .setName("target")
-                .setDescription("The user to unban (can be ID or mention)")
+                .setDescription("המשתמש להסרת חסימה (יכול להיות ID או התייחסות)")
                 .setRequired(true)
         )
         .addStringOption(option =>
             option.setName("reason")
-                .setDescription("Reason for the unban")
+                .setDescription("סיבת הסרת החסימה")
                 .setRequired(false)
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
@@ -36,7 +36,7 @@ export default {
 
         try {
                 const targetUser = interaction.options.getUser("target");
-                const reason = interaction.options.getString("reason") || "No reason provided";
+                const reason = interaction.options.getString("reason") || "לא סופקה סיבה";
 
                 
                 const result = await ModerationService.unbanUser({
@@ -49,8 +49,8 @@ export default {
                 await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         successEmbed(
-                            "✅ User Unbanned",
-                            `Successfully unbanned **${targetUser.tag}** from the server.\n\n**Reason:** ${reason}\n**Case ID:** #${result.caseId}`
+                            "✅ משתמש הוסר מחסימה",
+                            `הסרת חסימה בהצלחה של **${targetUser.tag}** מהשרת.\n\n**סיבה:** ${reason}\n**מספר Case:** #${result.caseId}`
                         )
                     ]
                 });
