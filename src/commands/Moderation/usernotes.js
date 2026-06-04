@@ -4,20 +4,10 @@ import { logger } from '../../utils/logger.js';
 import { getFromDb, setInDb, deleteFromDb } from '../../utils/database.js';
 import { sanitizeInput } from '../../utils/sanitization.js';
 
-
-
-
-
-
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 function getUserNotesKey(guildId, userId) {
     return `moderation_user_notes_${guildId}_${userId}`;
 }
-
-
-
-
-
 
 function getGuildNotesListKey(guildId) {
     return `moderation_user_notes_list_${guildId}`;
@@ -26,32 +16,32 @@ function getGuildNotesListKey(guildId) {
 export default {
     data: new SlashCommandBuilder()
         .setName("usernotes")
-        .setDescription("Manage user notes for moderation purposes")
+        .setDescription("ניהול הערות משתמש לצורכי ניהול")
         .addSubcommand(subcommand =>
             subcommand
                 .setName("add")
-                .setDescription("Add a note to a user")
+                .setDescription("הוסף הערה למשתמש")
                 .addUserOption(option =>
                     option
                         .setName("target")
-                        .setDescription("The user to add a note for")
+                        .setDescription("המשתמש להוספת הערה עבורו")
                         .setRequired(true)
                 )
                 .addStringOption(option =>
                     option
                         .setName("note")
-                        .setDescription("The note to add")
+                        .setDescription("ההערה להוספה")
                         .setRequired(true)
                 )
                 .addStringOption(option =>
                     option
                         .setName("type")
-                        .setDescription("Type of note")
+                        .setDescription("סוג הערה")
                         .addChoices(
-                            { name: "Warning", value: "warning" },
-                            { name: "Positive", value: "positive" },
-                            { name: "Neutral", value: "neutral" },
-                            { name: "Alert", value: "alert" }
+                            { name: "התראה", value: "warning" },
+                            { name: "חיובי", value: "positive" },
+                            { name: "ניטרלי", value: "neutral" },
+                            { name: "התنבהות", value: "alert" }
                         )
                         .setRequired(false)
                 )
@@ -59,28 +49,28 @@ export default {
         .addSubcommand(subcommand =>
             subcommand
                 .setName("view")
-                .setDescription("View notes for a user")
+                .setDescription("צפה בהערות על משתמש")
                 .addUserOption(option =>
                     option
                         .setName("target")
-                        .setDescription("The user to view notes for")
+                        .setDescription("המשתמש לצפייה בהערות שלו")
                         .setRequired(true)
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName("remove")
-                .setDescription("Remove a specific note from a user")
+                .setDescription("הסר הערה ספציפית ממשתמש")
                 .addUserOption(option =>
                     option
                         .setName("target")
-                        .setDescription("The user to remove a note from")
+                        .setDescription("המשתמש להסרת הערה ממנו")
                         .setRequired(true)
                 )
                 .addIntegerOption(option =>
                     option
                         .setName("index")
-                        .setDescription("The index of the note to remove")
+                        .setDescription("אינדקס ההערה להסרה")
                         .setRequired(true)
                         .setMinValue(1)
                 )
@@ -88,11 +78,11 @@ export default {
         .addSubcommand(subcommand =>
             subcommand
                 .setName("clear")
-                .setDescription("Clear all notes for a user")
+                .setDescription("מחק את כל ההערות על משתמש")
                 .addUserOption(option =>
                     option
                         .setName("target")
-                        .setDescription("The user to clear notes for")
+                        .setDescription("המשתמש למחיקת ההערות שלו")
                         .setRequired(true)
                 )
         )
@@ -104,8 +94,8 @@ export default {
             return InteractionHelper.safeReply(interaction, {
                 embeds: [
                     errorEmbed(
-                        "Permission Denied",
-                        "You do not have permission to manage user notes."
+                        "הרשאה נדחתה",
+                        "אין לך הרשאה לנהל הערות משתמש."
                     ),
                 ],
             });
@@ -119,8 +109,8 @@ export default {
             return InteractionHelper.safeReply(interaction, {
                 embeds: [
                     errorEmbed(
-                        "Invalid Subcommand",
-                        "Please select a valid subcommand."
+                        "Sub-command לא חוקי",
+                        "אנא בחר sub-command חוקי."
                     ),
                 ],
             });
@@ -146,8 +136,8 @@ export default {
                     return InteractionHelper.safeReply(interaction, {
                         embeds: [
                             errorEmbed(
-                                "Invalid Subcommand",
-                                "Please select a valid subcommand."
+                                "Sub-command לא חוקי",
+                                "אנא בחר sub-command חוקי."
                             ),
                         ],
                     });
@@ -157,8 +147,8 @@ export default {
             return InteractionHelper.safeReply(interaction, {
                 embeds: [
                     errorEmbed(
-                        "System Error",
-                        "An error occurred while processing your request. Please try again later."
+                        "שגיאת מערכת",
+                        "אירעה שגיאה בעת עיבוד בקשתך. אנא נסה שוב מאוחר יותר."
                     ),
                 ],
                 flags: MessageFlags.Ephemeral
@@ -175,8 +165,8 @@ async function handleAddNote(interaction, targetUser, notes, guildId) {
         return InteractionHelper.safeReply(interaction, {
             embeds: [
                 errorEmbed(
-                    "Note Too Long",
-                    "Notes must be 1000 characters or less."
+                    "הערה ארוכה מדי",
+                    "הערות חייבות להיות 1000 תווים או פחות."
                 ),
             ],
         });
@@ -186,8 +176,8 @@ async function handleAddNote(interaction, targetUser, notes, guildId) {
         return InteractionHelper.safeReply(interaction, {
             embeds: [
                 errorEmbed(
-                    "Empty Note",
-                    "Note cannot be empty."
+                    "הערה ריקה",
+                    "הערה לא יכולה להיות ריקה."
                 ),
             ],
         });
@@ -215,11 +205,11 @@ async function handleAddNote(interaction, targetUser, notes, guildId) {
     return InteractionHelper.safeReply(interaction, {
         embeds: [
             successEmbed(
-                `${typeInfo.emoji} Note Added`,
-                `Added a **${type}** note for **${targetUser.tag}**:\n\n` +
+                `${typeInfo.emoji} הערה התווספה`,
+                `התווספה הערה **${type}** עבור **${targetUser.tag}**:\n\n` +
                 `> ${note}\n\n` +
-                `**Moderator:** ${interaction.user.tag}\n` +
-                `**Total Notes:** ${notes.length}`
+                `**מנהל:** ${interaction.user.tag}\n` +
+                `**סה"כ הערות:** ${notes.length}`
             )
         ]
     });
@@ -230,8 +220,8 @@ async function handleViewNotes(interaction, targetUser, notes) {
         return InteractionHelper.safeReply(interaction, {
             embeds: [
                 infoEmbed(
-                    "📝 No Notes",
-                    `There are no notes for **${targetUser.tag}**.`
+                    "📝 אין הערות",
+                    `אין הערות עבור **${targetUser.tag}**.`
                 ),
             ],
         });
@@ -239,24 +229,24 @@ async function handleViewNotes(interaction, targetUser, notes) {
 
     const sortedNotes = [...notes].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-    let description = `**Notes for ${targetUser.tag} (${targetUser.id}):**\n\n`;
+    let description = `**הערות עבור ${targetUser.tag} (${targetUser.id}):**\n\n`;
     
     sortedNotes.forEach((note, index) => {
         const typeInfo = getNoteTypeInfo(note.type);
         const date = new Date(note.timestamp).toLocaleDateString();
-        description += `${typeInfo.emoji} **Note #${index + 1}** (${note.type}) - ${date}\n`;
+        description += `${typeInfo.emoji} **הערה #${index + 1}** (${note.type}) - ${date}\n`;
         description += `> ${note.content}\n`;
-        description += `*Added by ${note.author}*\n\n`;
+        description += `*הוסף על ידי ${note.author}*\n\n`;
     });
 
     if (description.length > 4000) {
-        description = description.substring(0, 3900) + "\n... *(truncated)*";
+        description = description.substring(0, 3900) + "\n... *(חתוך)*";
     }
 
     return InteractionHelper.safeReply(interaction, {
         embeds: [
             infoEmbed(
-                `📝 User Notes (${notes.length})`,
+                `📝 הערות משתמש (${notes.length})`,
                 description
             )
         ]
@@ -270,8 +260,8 @@ const index = interaction.options.getInteger("index") - 1;
         return InteractionHelper.safeReply(interaction, {
             embeds: [
                 errorEmbed(
-                    "Invalid Index",
-                    `Please provide a valid note index (1-${notes.length}).`
+                    "אינדקס לא חוקי",
+                    `אנא ספק אינדקס הערה חוקי (1-${notes.length}).`
                 ),
             ],
         });
@@ -288,10 +278,10 @@ const index = interaction.options.getInteger("index") - 1;
     return InteractionHelper.safeReply(interaction, {
         embeds: [
             successEmbed(
-                `${typeInfo.emoji} Note Removed`,
-                `Removed note #${index + 1} from **${targetUser.tag}**:\n\n` +
+                `${typeInfo.emoji} הערה הוסרה`,
+                `הסרה של הערה #${index + 1} מ-**${targetUser.tag}**:\n\n` +
                 `> ${removedNote.content}\n\n` +
-                `**Remaining Notes:** ${notes.length}`
+                `**הערות נותרות:** ${notes.length}`
             )
         ]
     });
@@ -304,8 +294,8 @@ async function handleClearNotes(interaction, targetUser, notes, guildId) {
         return InteractionHelper.safeReply(interaction, {
             embeds: [
                 infoEmbed(
-                    "No Notes to Clear",
-                    `There are no notes for **${targetUser.tag}** to clear.`
+                    "אין הערות למחיקה",
+                    `אין הערות עבור **${targetUser.tag}** למחיקה.`
                 ),
             ],
         });
@@ -319,8 +309,8 @@ async function handleClearNotes(interaction, targetUser, notes, guildId) {
     return InteractionHelper.safeReply(interaction, {
         embeds: [
             successEmbed(
-                "🗑️ Notes Cleared",
-                `Cleared **${noteCount}** notes from **${targetUser.tag}**.`
+                "🗑️ הערות נמחקו",
+                `נמחקו **${noteCount}** הערות מ-**${targetUser.tag}**.`
             )
         ]
     });
@@ -336,8 +326,3 @@ function getNoteTypeInfo(type) {
     
     return types[type] || types.neutral;
 }
-
-
-
-
-
