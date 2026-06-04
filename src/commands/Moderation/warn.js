@@ -8,18 +8,18 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
     data: new SlashCommandBuilder()
         .setName("warn")
-        .setDescription("Warn a user")
+        .setDescription("הזהר משתמש")
         .addUserOption((o) =>
             o
                 .setName("target")
                 .setRequired(true)
-                .setDescription("User to warn"),
+                .setDescription("משתמש להזהרה"),
         )
         .addStringOption((o) =>
             o
                 .setName("reason")
                 .setRequired(true)
-                .setDescription("Reason for the warning"),
+                .setDescription("סיבת ההתראה"),
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
     category: "moderation",
@@ -37,7 +37,7 @@ export default {
 
         try {
                 if (!interaction.member.permissions.has(PermissionFlagsBits.ModerateMembers)) {
-                    throw new Error("You need the `Moderate Members` permission to issue warnings.");
+                    throw new Error("אתה צריך הרשאת `ניהול חברים` כדי להנפיק התראות.");
                 }
 
                 const target = interaction.options.getUser("target");
@@ -47,7 +47,7 @@ export default {
                 const guildId = interaction.guildId;
 
                 if (!member) {
-                    throw new Error("The target user is not currently in this server.");
+                    throw new Error("משתמש היעד לא נמצא כרגע בשרת זה.");
                 }
 
                 
@@ -60,7 +60,7 @@ export default {
                 });
 
                 if (!result.success) {
-                    throw new Error("Failed to store warning in database");
+                    throw new Error("נכשל לשמור התראה בבסיס הנתונים");
                 }
 
                 const totalWarns = result.totalCount;
@@ -69,7 +69,7 @@ export default {
                     client,
                     guild: interaction.guild,
                     event: {
-                        action: "User Warned",
+                        action: "משתמש הוזהר",
                         target: `${target.tag} (${target.id})`,
                         executor: `${moderator.tag} (${moderator.id})`,
                         reason,
@@ -86,8 +86,8 @@ export default {
                 await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         successEmbed(
-                            `⚠️ **Warned** ${target.tag}`,
-                            `**Reason:** ${reason}\n**Total Warns:** ${totalWarns}`,
+                            `⚠️ **הוזהר** ${target.tag}`,
+                            `**סיבה:** ${reason}\n**סה"כ התראות:** ${totalWarns}`,
                         ),
                     ],
                 });
@@ -97,6 +97,3 @@ export default {
         }
     }
 };
-
-
-
