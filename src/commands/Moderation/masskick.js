@@ -8,16 +8,16 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
     data: new SlashCommandBuilder()
         .setName("masskick")
-        .setDescription("Kick multiple users from the server at once")
+        .setDescription("בעט מספר משתמשים מהשרת בבת אחת")
         .addStringOption(option =>
             option
                 .setName("users")
-                .setDescription("User IDs or mentions to kick (separated by spaces or commas)")
+                .setDescription("ID משתמשים או התייחסויות לבעיטה (מופרדות בחללים או פסיקים)")
                 .setRequired(true)
         )
         .addStringOption(option =>
             option.setName("reason")
-                .setDescription("Reason for the mass kick")
+                .setDescription("סיבת הבעיטה ההמונית")
                 .setRequired(false)
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
@@ -38,15 +38,15 @@ export default {
             return await InteractionHelper.safeEditReply(interaction, {
                 embeds: [
                     errorEmbed(
-                        "Permission Denied",
-                        "You do not have permission to kick members."
+                        "הרשאה נדחתה",
+                        "אין לך הרשאה לבעוט בחברים."
                     ),
                 ],
             });
         }
 
         const usersInput = interaction.options.getString("users");
-        const reason = interaction.options.getString("reason") || "Mass kick - No reason provided";
+        const reason = interaction.options.getString("reason") || "בעיטה המונית - לא סופקה סיבה";
 
         try {
             
@@ -56,8 +56,8 @@ export default {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         warningEmbed(
-                            "You're performing mass kicks too fast. Please wait a minute before trying again.",
-                            "⏳ Rate Limited"
+                            "אתה מבצע בעיטות המוניות מהר מדי. אנא חכה דקה לפני שתנסה שוב.",
+                            "⏳ מוגבל בקצב"
                         ),
                     ],
                     flags: MessageFlags.Ephemeral,
@@ -74,8 +74,8 @@ export default {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            "Invalid Users",
-                            "Please provide valid user IDs or mentions. Maximum 20 users at once."
+                            "משתמשים לא חוקיים",
+                            "אנא ספק ID משתמשים או התייחסויות חוקיות. מקסימום 20 משתמשים בבת אחת."
                         ),
                     ],
                 });
@@ -85,8 +85,8 @@ export default {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            "Cannot Kick Self",
-                            "You cannot include yourself in a mass kick."
+                            "לא יכול לבעוט בעצמך",
+                            "אתה לא יכול לכלול את עצמך בבעיטה המונית."
                         ),
                     ],
                 });
@@ -96,8 +96,8 @@ export default {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            "Cannot Kick Bot",
-                            "You cannot include the bot in a mass kick."
+                            "לא יכול לבעוט בבוט",
+                            "אתה לא יכול לכלול את הבוט בבעיטה המונית."
                         ),
                     ],
                 });
@@ -114,7 +114,7 @@ export default {
                     const member = await interaction.guild.members.fetch(userId).catch(() => null);
                     
                     if (!member) {
-                        results.failed.push({ userId, reason: "User not in server" });
+                        results.failed.push({ userId, reason: "משתמש לא בשרת" });
                         continue;
                     }
 
@@ -123,7 +123,7 @@ export default {
                         results.skipped.push({ 
                             user: member.user.tag, 
                             userId, 
-                            reason: "Cannot kick user with equal or higher role" 
+                            reason: "לא יכול לבעוט במשתמש עם תפקיד שווה או גבוה יותר" 
                         });
                         continue;
                     }
@@ -139,10 +139,10 @@ export default {
                         client,
                         guild: interaction.guild,
                         event: {
-                            action: "Member Kicked",
+                            action: "חבר בעוט",
                             target: `${member.user.tag} (${member.user.id})`,
                             executor: `${interaction.user.tag} (${interaction.user.id})`,
-                            reason: `${reason} (Mass Kick)`,
+                            reason: `${reason} (בעיטה המונית)`,
                             metadata: {
                                 userId: member.user.id,
                                 moderatorId: interaction.user.id,
@@ -155,15 +155,15 @@ export default {
                     logger.error(`Failed to kick user ${userId}:`, error);
                     results.failed.push({ 
                         userId, 
-                        reason: error.message || "Unknown error" 
+                        reason: error.message || "שגיאה לא ידועה" 
                     });
                 }
             }
 
-            let description = `**Mass Kick Results:**\n\n`;
+            let description = `**תוצאות בעיטה המונית:**\n\n`;
             
             if (results.successful.length > 0) {
-                description += `✅ **Successfully Kicked (${results.successful.length}):**\n`;
+                description += `✅ **בעוטו בהצלחה (${results.successful.length}):**\n`;
                 results.successful.forEach(result => {
                     description += `• ${result.user} (${result.userId})\n`;
                 });
@@ -171,7 +171,7 @@ export default {
             }
 
             if (results.skipped.length > 0) {
-                description += `⚠️ **Skipped (${results.skipped.length}):**\n`;
+                description += `⚠️ **דלג עליו (${results.skipped.length}):**\n`;
                 results.skipped.forEach(result => {
                     description += `• ${result.user} - ${result.reason}\n`;
                 });
@@ -179,7 +179,7 @@ export default {
             }
 
             if (results.failed.length > 0) {
-                description += `❌ **Failed (${results.failed.length}):**\n`;
+                description += `❌ **כשל (${results.failed.length}):**\n`;
                 results.failed.forEach(result => {
                     description += `• ${result.userId} - ${result.reason}\n`;
                 });
@@ -190,7 +190,7 @@ export default {
             return await InteractionHelper.safeEditReply(interaction, {
                 embeds: [
                     embed(
-                        `👢 Mass Kick Completed`,
+                        `👢 בעיטה המונית הסתיימה`,
                         description
                     )
                 ]
@@ -201,14 +201,11 @@ export default {
             return await InteractionHelper.safeEditReply(interaction, {
                 embeds: [
                     errorEmbed(
-                        "System Error",
-                        "An error occurred while processing the mass kick. Please try again later."
+                        "שגיאת מערכת",
+                        "אירעה שגיאה בעת עיבוד הבעיטה ההמונית. אנא נסה שוב מאוחר יותר."
                     ),
                 ],
             });
         }
     }
 };
-
-
-
