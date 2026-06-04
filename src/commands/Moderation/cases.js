@@ -6,27 +6,27 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('cases')
-        .setDescription('View moderation cases and audit logs')
+        .setDescription('צפה בתיקיות ניהול ויומני ביקורת')
         .setDefaultMemberPermissions(PermissionFlagsBits.ViewAuditLog)
         .setDMPermission(false)
         .addStringOption(option =>
             option.setName('filter')
-                .setDescription('Filter cases by type or user')
+                .setDescription('סנן תיקיות לפי סוג או משתמש')
                 .addChoices(
-                    { name: 'All Cases', value: 'all' },
-                    { name: 'Bans', value: 'Member Banned' },
-                    { name: 'Kicks', value: 'Member Kicked' },
+                    { name: 'כל התיקיות', value: 'all' },
+                    { name: 'חסימות', value: 'Member Banned' },
+                    { name: 'בעיטות', value: 'Member Kicked' },
                     { name: 'Timeouts', value: 'Member Timed Out' },
-                    { name: 'Warnings', value: 'User Warned' }
+                    { name: 'התראות', value: 'User Warned' }
                 )
         )
         .addUserOption(option =>
             option.setName('user')
-                .setDescription('Filter cases by specific user')
+                .setDescription('סנן תיקיות לפי משתמש ספציפי')
         )
         .addIntegerOption(option =>
             option.setName('limit')
-                .setDescription('Number of cases to show (default: 10)')
+                .setDescription('מספר התיקיות להציג (ברירת מחדל: 10)')
                 .setMinValue(1)
                 .setMaxValue(50)
         ),
@@ -57,8 +57,8 @@ export default {
 
             if (cases.length === 0) {
                 throw new Error(targetUser 
-                    ? `No moderation cases found for ${targetUser.tag}`
-                    : `No ${filterType === 'all' ? '' : filterType} cases found in this server.`
+                    ? `לא נמצאו תיקיות ניהול עבור ${targetUser.tag}`
+                    : `לא נמצאו תיקיות ${filterType === 'all' ? '' : filterType} בשרת זה.`
                 );
             }
 
@@ -72,8 +72,8 @@ export default {
                 const pageCases = cases.slice(startIndex, endIndex);
 
                 const embed = createEmbed({
-                    title: '📋 Moderation Cases',
-                    description: `Showing moderation cases for **${interaction.guild.name}**\n\n**Page ${page} of ${totalPages}**`
+                    title: '📋 תיקיות ניהול',
+                    description: `מציג תיקיות ניהול עבור **${interaction.guild.name}**\n\n**עמוד ${page} מתוך ${totalPages}**`
                 });
 
                 pageCases.forEach(case_ => {
@@ -81,14 +81,14 @@ export default {
                     const time = new Date(case_.createdAt).toLocaleTimeString();
                     
                     embed.addFields({
-                        name: `Case #${case_.caseId} - ${case_.action}`,
-                        value: `**Target:** ${case_.target}\n**Moderator:** ${case_.executor}\n**Date:** ${date} at ${time}\n**Reason:** ${case_.reason || 'No reason provided'}`,
+                        name: `תיקייה #${case_.caseId} - ${case_.action}`,
+                        value: `**יעד:** ${case_.target}\n**מנהל:** ${case_.executor}\n**תאריך:** ${date} בשעה ${time}\n**סיבה:** ${case_.reason || 'לא סופקה סיבה'}`,
                         inline: false
                     });
                 });
 
                 embed.setFooter({
-                    text: `Total cases: ${cases.length} | Filter: ${filterType}${targetUser ? ` | User: ${targetUser.tag}` : ''}`
+                    text: `סה"כ תיקיות: ${cases.length} | סינון: ${filterType}${targetUser ? ` | משתמש: ${targetUser.tag}` : ''}`
                 });
 
                 return embed;
@@ -99,19 +99,19 @@ export default {
                 
                 const prevButton = new ButtonBuilder()
                     .setCustomId('prev_page')
-                    .setLabel('⬅️ Previous')
+                    .setLabel('⬅️ הקודם')
                     .setStyle(ButtonStyle.Secondary)
                     .setDisabled(page === 1);
 
                 const pageInfoButton = new ButtonBuilder()
                     .setCustomId('page_info')
-                    .setLabel(`Page ${page}/${totalPages}`)
+                    .setLabel(`עמוד ${page}/${totalPages}`)
                     .setStyle(ButtonStyle.Primary)
                     .setDisabled(true);
 
                 const nextButton = new ButtonBuilder()
                     .setCustomId('next_page')
-                    .setLabel('Next ➡️')
+                    .setLabel('הבא ➡️')
                     .setStyle(ButtonStyle.Secondary)
                     .setDisabled(page === totalPages);
 
@@ -134,7 +134,7 @@ time: 120000
 
                 if (buttonInteraction.user.id !== interaction.user.id) {
                     await buttonInteraction.followUp({
-                        content: 'You cannot use these buttons. Run `/cases` to get your own case view.',
+                        content: 'אתה לא יכול להשתמש בכפתורים אלה. הרץ `/cases` כדי לקבל את תצוגת התיקייה שלך.',
                         flags: MessageFlags.Ephemeral
                     });
                     return;
@@ -171,8 +171,8 @@ time: 120000
             return InteractionHelper.safeEditReply(interaction, {
                 embeds: [
                     errorEmbed(
-                        'System Error',
-                        'An error occurred while retrieving moderation cases. Please try again later.'
+                        'שגיאת מערכת',
+                        'אירעה שגיאה בעת קבלת תיקיות ניהול. אנא נסה שוב מאוחר יותר.'
                     )
                 ],
                 flags: MessageFlags.Ephemeral
@@ -180,7 +180,3 @@ time: 120000
         }
     }
 };
-
-
-
-
